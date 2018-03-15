@@ -1,12 +1,17 @@
 ---
 # handlers file for rtindru.flower-celery
 
-- name: Restart Flower
-  service: name={{ flower_app_name }}-flower state=restarted
-  become: true
-  become_method: sudo
+- name: flower restart
+  service:
+    name: "{{ flower_app_name }}-flower"
+    state: restarted
 
-- name: Reload Flower
-  service: name={{ flower_app_name }}-flower state=reloaded
-  become: true
-  become_method: sudo
+- name: flower reload
+  service:
+    name: "{{ flower_app_name }}-flower"
+    state: reloaded
+
+- name: nginx reload
+  service:
+    name: nginx
+    state: reloaded

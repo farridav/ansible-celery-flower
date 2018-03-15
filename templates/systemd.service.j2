@@ -1,0 +1,14 @@
+[Unit]
+	Description=Flower Service
+	After=network.target
+
+[Service]
+	Type=simple
+	Restart=on-failure
+	User={{ flower_user }}
+	Group={{ flower_group }}
+	PermissionsStartOnly=true
+	ExecStart={{ flower_bin }} --broker={{ flower_broker }}
+
+[Install]
+	WantedBy=multi-user.target

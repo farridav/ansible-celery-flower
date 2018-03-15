@@ -6,6 +6,7 @@ flower_version: 0.9.2                                 # Version of flower to ins
 flower_user: "{{deploy_user|default('root')}}"        # User to run flower
 flower_group: "{{deploy_group|default('root')}}"      # Group to run flower
 
+flower_bin:                                           # Path to your flower binary, when omitted, installs into system
 flower_app_name: "{{deploy_app_name|default('web')}}" # Application name
 flower_app_module: "{{flower_app_name}}"              # Set to application module
 flower_host: localhost
@@ -31,3 +32,8 @@ flower_basic_auth: ""                                 # comma separated list of 
 # URL Prefix
 flower_url_prefix_enabled: no
 flower_url_prefix: ""
+
+# Service manager
+flower_service: upstart                               # service manager to use (upstart/init/systemd)
+
+flower_nginx: no                                      # expose flower UI via nginx

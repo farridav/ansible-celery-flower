@@ -27,6 +27,8 @@ Role Variables
 - flower_broker: Broker URL
 - flower_host: Run the http server on a given address
 - flower_port: Run the http server on a given port
+- flower_service: service manager to use (upstart/init/systemd, default: upstart)
+- flower_nginx: # expose flower UI via nginx, default no
 
 Dependencies
 ------------

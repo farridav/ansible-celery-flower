@@ -6,18 +6,35 @@
     name: flower
     version: "{{ flower_version }}"
     state: present
-  become: true
-  become_method: sudo
-
-- name: Create /etc/flower
-  file:
-    name: /etc/flower
-    state: directory
-  become: true
-  become_method: sudo
+  when: not flower_bin
 
 - name: Install Upstart script
-  template: src=upstart.conf.j2 dest=/etc/init/{{ flower_app_name }}-flower.conf
-  notify: Restart Flower
-  become: true
-  become_method: sudo
+  template:
+    src: upstart.conf.j2
+    dest: "/etc/init/{{ flower_app_name }}-flower.conf"
+  when: flower_service == 'upstart'
+  notify: flower reload
+
+- name: Install SystemD script
+  template:
+    src: systemd.service.j2
+    dest: "/etc/systemd/system/{{ flower_app_name }}-flower.service"
+  when: flower_service == 'systemd'
+  notify: flower restart
+
+- name: Setup Nginx configuration
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ flower_app_name }}.conf"
+    owner: "{{ flower_user }}"
+    group: "{{ flower_group }}"
+  when: flower_nginx
+  notify: nginx reload
+
+- name: Enable nginx site
+  file:
+    state: link
+    src: "/etc/nginx/sites-available/{{ flower_app_name }}.conf"
+    dest: "/etc/nginx/sites-enabled/{{ flower_app_name }}.conf"
+  when: flower_nginx
+  notify: nginx restart
