@@ -15,6 +15,7 @@ flower_broker: "amqp://guest:guest@localhost:5672//"  # Broker URL
 
 flower_pre_exec: []                                   # Commands to execute before starting celery, e.g (`. /path/to/env_vars`)
 flower_env: {}                                        # Default environment variables
+flower_env_file:                                      # File path containing environment variables
 
 # Directories
 flower_prefix: "{{deploy_dir|default('/usr/lib/' + flower_app_name)}}" # Set to installation prefix

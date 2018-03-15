@@ -8,7 +8,21 @@
 	User={{ flower_user }}
 	Group={{ flower_group }}
 	PermissionsStartOnly=true
-	ExecStart={{ flower_bin }} --broker={{ flower_broker }}
+
+    {% if flower_env -%}
+    Environment={% for key in env %}'{{key}}={{env[key]}}' {% endfor %}
+    {% endif -%}
+
+    {% if flower_env_file -%}
+    EnvironmentFile={{ flower_env_file }}
+    {% endif -%}
+
+    {% for line in flower_pre_exec %}
+    ExecStartPre={{ line }}
+    {% endfor %}
+
+	ExecStart={{ flower_bin }} --pidfile="{{ flower_run_dir }}/flower.pid" --logfile="{{ flower_log_dir }}/flower.log" --loglevel="{{ flower_log_level }}" --app="{{ flower_app_module }}" --workdir="{{ flower_work_dir }}" --uid="{{ flower_user }}" --gid="{{ flower_group }}" --broker="{{ flower_broker }}" --port="{{ flower_port }}"  --address="{{ flower_host }}"  {% if flower_url_prefix_enabled %} --url_prefix="{{ flower_url_prefix }}"  {% endif %}  {% if flower_basic_auth_enabled %} --basic_auth="{{ flower_basic_auth }}"  {% endif %}
+	ExecReload?=/bin/kill -s HUP $MAINPID
 
 [Install]
 	WantedBy=multi-user.target
