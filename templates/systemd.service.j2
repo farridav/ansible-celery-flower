@@ -22,7 +22,8 @@
     {% endfor -%}
 
 	ExecStart={{ flower_bin }} --unix_socket="{{ flower_run_dir }}/{{ flower_app_name }}-flower.sock" --log_file_prefix="{{ flower_log_dir }}" --logging="{{ flower_log_level }}" --port="{{ flower_port }}" --address="{{ flower_host }}" {% if flower_url_prefix_enabled -%} --url_prefix="{{ flower_url_prefix }}" {% endif -%} {% if flower_basic_auth_enabled -%} --basic_auth="{{ flower_basic_auth }}" {% endif -%}
-	ExecReload?=/bin/kill -s HUP $MAINPID
+
+	ExecReload=/bin/kill -s HUP $MAINPID
 
 [Install]
 	WantedBy=multi-user.target

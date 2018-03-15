@@ -2,30 +2,30 @@
 # Do NOT modify this file by hand!
 
 # Application Upstream
-upstream wsgi-subpriceflower {
-  server unix:///opt/subpricepromise/run/subpricepromise-flower;
+upstream {{ flower_app_name }}-flower {
+  server unix://{{ flower_run_dir }}/{{ flower_app_name }}-flower.sock;
 }
 
 # Rewrite www.domain.zone -> domain.zone
-
 # Redirect HTTP to SSL
 server {
     listen 80;
-    server_name subpriceflower.bc.jsplc.net;
+    server_name {{ flower_host }};
     rewrite ^(.*) https://$host$1 permanent;
 }
 
 # Server HTTPS
 server {
     listen 443;
-    server_name subpriceflower.bc.jsplc.net;
-ssl on;
-    ssl_protocols   TLSv1 TLSv1.1 TLSv1.2;
-    ssl_certificate /etc/ssl/nginx/certs/self-signed-wildcard-bc-jsplc-net.cert;
-    ssl_certificate_key /etc/ssl/nginx/keys/self-signed-wildcard-bc-jsplc-net.key;
+    server_name {{ flower_host }};
 
-    access_log /opt/subpricepromise/log/subpriceflower-nginx-access.log;
-    error_log /opt/subpricepromise/log/subpricepflower-nginx-error.log;
+    ssl on;
+    ssl_protocols   TLSv1 TLSv1.1 TLSv1.2;
+    ssl_certificate {{ flower_nginx_ssl_crt }};
+    ssl_certificate_key {{ flower_nginx_ssl_key }};
+
+    access_log {{ flower_log_dir }}/{{ flower_app_name }}-flower-nginx-access.log;
+    error_log {{ flower_log_dir }}/{{ flower_app_name }}-flower-nginx-error.log;
 
     charset utf-8;
     client_max_body_size 15M;
@@ -35,14 +35,14 @@ ssl on;
     location / {
         expires off;
         proxy_set_header  X-Real-IP  $remote_addr;
-	proxy_set_header Host $http_host;
-	proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass http://wsgi-subpriceflower;
+    	proxy_set_header Host $http_host;
+	    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass http://{{ flower_app_name }}-flower;
     }
 
     location /static/ {
         access_log off;
-        root /opt/subpricepromise/env/lib/python2.7/site-packages/flower/;
+        root {{ flower_root }};
         expires max;
     }
 }
